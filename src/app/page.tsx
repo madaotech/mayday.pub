@@ -10,7 +10,8 @@ import { useEffect, useRef, useState } from 'react'
 
 export default function Home() {
   const searchParams = useSearchParams()
-  const photoId = searchParams.get('photoId')
+  const _photoId = searchParams.get('photoId')
+  const photoId = Number(_photoId);
   const [lastViewedPhoto, setLastViewedPhoto] = useLastViewedPhoto()
 
   const lastViewedPhotoRef = useRef<HTMLAnchorElement>(null)
@@ -29,9 +30,10 @@ export default function Home() {
       setLastViewedPhoto(null)
     }
   }, [photoId, lastViewedPhoto, setLastViewedPhoto])
+
   return (
     <main className="mx-auto max-w-[1960px] p-4">
-      {photoId && (
+      {!!photoId && (
         <Modal
           images={images}
           onClose={() => {
@@ -40,12 +42,11 @@ export default function Home() {
         />
       )}
       <div className="columns-1 gap-4 sm:columns-2 xl:columns-3 2xl:columns-4">
-        {images.map(({ idx, aircraft, thumbnail }) => {
+        {images.map(({ idx, thumbnail }) => {
           return (
             <Link
               key={idx}
-              href={aircraft.href}
-              as={`/p/${idx}`}
+              href={`?photoId=${idx}`}
               ref={idx === Number(lastViewedPhoto) ? lastViewedPhotoRef : null}
               shallow
               className="after:content group relative mb-5 block w-full cursor-zoom-in after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight"
@@ -75,10 +76,7 @@ export default function Home() {
 
 async function getData() {
   const res = await fetch('/api/cloudinary')
-  // The return value is *not* serialized
-  // You can return Date, Map, Set, etc.
   if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
     throw new Error('Failed to fetch data')
   }
   return res.json()

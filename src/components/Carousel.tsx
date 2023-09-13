@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import useKeypress from 'react-use-keypress'
+import { useKeyPressEvent } from 'react-use'
 import type { ImageProps } from '@/lib/types'
 import { useLastViewedPhoto } from '@/lib/useLastViewedPhoto'
 import SharedModal from './SharedModal'
@@ -24,7 +24,7 @@ export default function Carousel({
     return newVal
   }
 
-  useKeypress('Escape', () => {
+  useKeyPressEvent('Escape', () => {
     closeModal()
   })
 

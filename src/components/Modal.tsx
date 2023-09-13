@@ -2,7 +2,7 @@ import { Dialog } from '@headlessui/react'
 import { motion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef, useState } from 'react'
-import useKeypress from 'react-use-keypress'
+import { useKeyPressEvent } from 'react-use'
 import type { ImageProps } from '@/lib/types'
 import SharedModal from './SharedModal'
 
@@ -13,7 +13,7 @@ export default function Modal({
   images: ImageProps[]
   onClose?: () => void
 }) {
-  let overlayRef = useRef<HTMLElement>(null)
+  let overlayRef = useRef<HTMLDivElement>(null)
   const searchParams = useSearchParams()
   const photoId = searchParams.get('photoId')
   const router = useRouter()
@@ -24,7 +24,7 @@ export default function Modal({
   const [curIndex, setCurIndex] = useState(index)
 
   function handleClose() {
-    router.push('/', undefined)
+    router.push('/')
     onClose && onClose()
   }
 
@@ -36,22 +36,16 @@ export default function Modal({
     }
     setCurIndex(newVal)
     // TODO: this is a hack to get the url to update without reloading the page
-    router.push(
-      {
-        query: { photoId: newVal },
-      },
-      `/p/${newVal}`,
-      { shallow: true }
-    )
+    router.push(`?photoId=${newVal}`)
   }
 
-  useKeypress('ArrowRight', () => {
+  useKeyPressEvent('ArrowRight', () => {
     if (index + 1 < images.length) {
       changePhotoId(index + 1)
     }
   })
 
-  useKeypress('ArrowLeft', () => {
+  useKeyPressEvent('ArrowLeft', () => {
     if (index > 0) {
       changePhotoId(index - 1)
     }

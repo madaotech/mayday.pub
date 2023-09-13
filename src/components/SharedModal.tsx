@@ -25,14 +25,14 @@ export default function SharedModal({
   direction,
 }: SharedModalProps) {
   const [loaded, setLoaded] = useState(false)
-
+  console.log('images', images)
   let filteredImages = images?.filter((img: ImageProps) =>
-    range(index - 15, index + 15).includes(img.id)
+    range(index - 15, index + 15).includes(img.idx)
   )
-
+  console.log('filteredImages', filteredImages)
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      if (index < images?.length - 1) {
+      if (images && index < images?.length - 1) {
         changePhotoId(index + 1)
       }
     },
@@ -45,7 +45,7 @@ export default function SharedModal({
   })
 
   let currentImage = images ? images[index] : currentPhoto
-
+  console.log(currentImage)
   return (
     <MotionConfig
       transition={{
@@ -75,7 +75,7 @@ export default function SharedModal({
                   width={navigation ? 1280 : 1920}
                   height={navigation ? 853 : 1280}
                   priority
-                  alt="Next.js Conf image"
+                  alt={`${currentImage?.aircraft.name}`}
                   onLoadingComplete={() => setLoaded(true)}
                 />
               </motion.div>
@@ -99,7 +99,7 @@ export default function SharedModal({
                       <ChevronLeftIcon className="h-6 w-6" />
                     </button>
                   )}
-                  {index + 1 < images.length && (
+                  {images && (index + 1 < images.length) && (
                     <button
                       className="absolute right-3 top-[calc(50%-16px)] rounded-full bg-black/50 p-3 text-white/75 backdrop-blur-lg transition hover:bg-black/75 hover:text-white focus:outline-none"
                       style={{ transform: 'translate3d(0, 0, 0)' }}
@@ -159,7 +159,7 @@ export default function SharedModal({
                 className="mx-auto mt-6 mb-6 flex aspect-[3/2] h-14"
               >
                 <AnimatePresence initial={false}>
-                  {filteredImages.map(({ idx, originalimage }) => (
+                  {filteredImages?.map(({ idx, originalimage }) => (
                     <motion.button
                       initial={{
                         width: '0%',
@@ -174,9 +174,9 @@ export default function SharedModal({
                       onClick={() => changePhotoId(idx)}
                       key={idx}
                       className={`${idx === index
-                          ? 'z-20 rounded-md shadow shadow-black/50'
-                          : 'z-10'
-                        } ${idx === 0 ? 'rounded-l-md' : ''} ${idx === images.length - 1 ? 'rounded-r-md' : ''
+                        ? 'z-20 rounded-md shadow shadow-black/50'
+                        : 'z-10'
+                        } ${idx === 0 ? 'rounded-l-md' : ''} ${idx === (images && images.length - 1) ? 'rounded-r-md' : ''
                         } relative inline-block w-full shrink-0 transform-gpu overflow-hidden focus:outline-none`}
                     >
                       <Image
@@ -184,8 +184,8 @@ export default function SharedModal({
                         width={180}
                         height={120}
                         className={`${idx === index
-                            ? 'brightness-110 hover:brightness-110'
-                            : 'brightness-50 contrast-125 hover:brightness-75'
+                          ? 'brightness-110 hover:brightness-110'
+                          : 'brightness-50 contrast-125 hover:brightness-75'
                           } h-full transform object-cover transition`}
                         src={`${originalimage.source}`}
                       />
